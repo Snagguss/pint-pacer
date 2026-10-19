@@ -118,7 +118,7 @@ const MODES = {
     valueSuffix: " ml",
     valueDecimals: 0,
 
-    unitSize: 750,
+    unitSize: 30,
     unitName: "shot",
 
     template: "template",
@@ -126,7 +126,7 @@ const MODES = {
     liquid: "shotLiquid",
 
     defaultTime: 600,
-    valueSlider: { min: 0, normalMax: 2000, bigMax: 10000, increment: 3000, step: 1 },
+    valueSlider: { min: 0, normalMax: 2000, bigMax: 3000, increment: 3000, step: 1 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
     graphicY: 1025,
