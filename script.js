@@ -4,10 +4,10 @@
 
 const CONFIG = {
   FONT_SIZE: 140,
-  Y_VOLUME: 263,
-  Y_PACE: 565,
-  Y_TIME: 873,
-  Y_GRAPHIC: 1100,
+  Y_VOLUME: 188,   // 263 - 75
+  Y_PACE: 490,     // 565 - 75
+  Y_TIME: 798,     // 873 - 75
+  Y_GRAPHIC: 1025, // 1025 - 75
   FONT_FAMILY: "Arial",
   FONT_WEIGHT: "700",
   DEFAULT_SPACING: 10,
@@ -53,7 +53,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 3000, bigMax: 15000, increment: 3000, step: 1 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
-    graphicY: 1100,
+    graphicY: 1025,
     graphicXOffset: 0,
     backYOffset: 0,
     liquidXOffset: 0,
@@ -77,7 +77,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 1500, bigMax: 8000, increment: 3000, step: 1 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
-    graphicY: 1100,
+    graphicY: 1025,
     graphicXOffset: 0,
     backYOffset: 0,
     liquidXOffset: 0,
@@ -103,7 +103,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 2000, bigMax: 10000, increment: 3000, step: 1 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
     
-    graphicY: 1100,
+    graphicY: 1025,
     graphicXOffset: 0,
     backYOffset: -5,
     liquidXOffset: 0,
@@ -129,7 +129,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 2000, bigMax: 10000, increment: 3000, step: 1 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
-    graphicY: 1100,
+    graphicY: 1025,
     graphicXOffset: 0,
     backYOffset: -5,
     liquidXOffset: 0,
@@ -153,7 +153,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 3000, bigMax: 15000, increment: 3000, step: 1 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
-    graphicY: 1100,
+    graphicY: 1025,
     graphicXOffset: 0,
     backYOffset: 0,
     liquidXOffset: 0,
@@ -179,7 +179,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 10, bigMax: 30, increment: 5, step: 0.05 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
-    graphicY: 1090,
+    graphicY: 1015,
     graphicXOffset: 0,
     backYOffset: 0,
     liquidXOffset: 0,
@@ -206,7 +206,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 10, bigMax: 30, increment: 5, step: 0.05 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
-    graphicY: 1090,
+    graphicY: 1015,
     graphicXOffset: 0,
     backYOffset: 0,
     liquidXOffset: 0,
@@ -232,7 +232,7 @@ const MODES = {
     valueSlider: { min: 0, normalMax: 10, bigMax: 30, increment: 5, step: 0.05 },
     timeSlider:  { min: 0, normalMax: 1800, bigMax: 14400, increment: 1800, step: 1 },
 
-    graphicY: 1090,
+    graphicY: 1015,
     graphicXOffset: 0,
     backYOffset: 0,
     liquidXOffset: 0,
@@ -248,8 +248,8 @@ const MODES = {
 // Rename these paths if your new files have different names.
 
 const ASSET_PATHS = {
-  template: "assets/TEMPLATE.png",
-  amountTemplate: "assets/TEMPLATE.png",
+  template: "assets/TEMPLATE_S.png",
+  amountTemplate: "assets/TEMPLATE_S.png",
 
   wineGlass: "assets/WINE_GLASS.png",
   wineLiquid: "assets/WINE_LIQUID.png",
@@ -335,6 +335,9 @@ async function loadAssets() {
 
   applyMode(getMode(), true);
   render();
+  requestAnimationFrame(() => {
+  resetMobilePreviewMetrics();
+});
 }
 
 // -----------------------------------------------------------------------------
@@ -870,24 +873,9 @@ function render() {
   const timeText = formatElapsed(elapsed);
   const paceText = formatPace(value, elapsed, cfg.unitSize, cfg.unitName);
 
-  drawCenteredHeading(
-  cfg.heading,
-  CONFIG.Y_VOLUME - CONFIG.HEADING_OFFSET
-);
-
-drawCenteredHeading(
-  "Pace",
-  CONFIG.Y_PACE - CONFIG.HEADING_OFFSET
-);
-
-drawCenteredHeading(
-  "Time",
-  CONFIG.Y_TIME - CONFIG.HEADING_OFFSET
-);
-
-drawCenteredText(valueText, CONFIG.Y_VOLUME);
-drawCenteredText(paceText, CONFIG.Y_PACE);
-drawCenteredText(timeText, CONFIG.Y_TIME);
+  drawCenteredHeading(cfg.heading,CONFIG.Y_VOLUME - CONFIG.HEADING_OFFSET);
+  drawCenteredHeading("Pace",CONFIG.Y_PACE - CONFIG.HEADING_OFFSET);
+  drawCenteredHeading("Time",CONFIG.Y_TIME - CONFIG.HEADING_OFFSET);
 
   drawCenteredText(valueText, CONFIG.Y_VOLUME);
   drawCenteredText(paceText, CONFIG.Y_PACE);
@@ -943,34 +931,15 @@ function downloadPng() {
 // EVENTS
 // -----------------------------------------------------------------------------
 
-volumeSlider.addEventListener("input", () => {
-  updateValueStepButtons();
-  render();
-});
-timeSlider.addEventListener("input", () => {
-  updateTimeStepButtons();
-  render();
-});
+volumeSlider.addEventListener("input", () => {updateValueStepButtons();render();});
+timeSlider.addEventListener("input", () => {updateTimeStepButtons();render();});
+modeSelect.addEventListener("change", () => {applyMode(modeSelect.value);});
 
-modeSelect.addEventListener("change", () => {
-  applyMode(modeSelect.value);
-});
+lessVolumeButton.addEventListener("click", () => {stepValueWhole(-1);});
+moreVolumeButton.addEventListener("click", () => {stepValueWhole(1);});
 
-lessVolumeButton.addEventListener("click", () => {
-  stepValueWhole(-1);
-});
-
-moreVolumeButton.addEventListener("click", () => {
-  stepValueWhole(1);
-});
-
-lessTimeButton.addEventListener("click", () => {
-  stepTimeWhole(-1);
-});
-
-moreTimeButton.addEventListener("click", () => {
-  stepTimeWhole(1);
-});
+lessTimeButton.addEventListener("click", () => {stepTimeWhole(-1);});
+moreTimeButton.addEventListener("click", () => {stepTimeWhole(1);});
 
 downloadButton.addEventListener("click", downloadPng);
 
@@ -985,39 +954,124 @@ loadAssets().catch((error) => {
   status.classList.add("error");
 });
 
+let mobilePreviewStart = null;
+let mobileFullPreviewHeight = null;
+let mobilePreviewFrameHeight = null;
+let mobilePreviewPadding = 0;
+let mobileScrollRAF = null;
+
 function updateMobilePreviewSize() {
-  if (window.innerWidth > 780) {
-    document.documentElement.style.removeProperty("--mobile-preview-width");
-    return;
-  }
+  if (mobileScrollRAF !== null) return;
 
-  // How far you scroll before image reaches minimum size
-  const shrinkDistance = 260;
+  mobileScrollRAF = requestAnimationFrame(() => {
+    mobileScrollRAF = null;
 
-  // 0 → 1
-  const progress = Math.min(
-    1,
-    Math.max(0, window.scrollY / shrinkDistance)
-  );
+    const root = document.documentElement;
+    const header = document.querySelector(".mobile-header");
+    const previewPanel = document.querySelector(".preview-panel");
+    const previewFrame = document.querySelector(".preview-frame");
 
-  // Start at 100%, finish at 55%
-  const maxWidth = 100;
-  const minWidth = 55;
+    if (window.innerWidth > 780 || !assets || !header || !previewPanel || !previewFrame) return;
 
-  const width =
-    maxWidth -
-    (maxWidth - minWidth) * progress;
+    const shrinkDistance = 150;
+    const minScale = 0.65;
 
-  document.documentElement.style.setProperty(
-    "--mobile-preview-width",
-    `${width}%`
-  );
+    // MEASURE STARTING POSITION ONCE
+    if (mobilePreviewStart === null) {
+      previewFrame.style.transform = "scale(1)";
+      previewPanel.style.height = "auto";
+
+      const panelStyle = getComputedStyle(previewPanel);
+      const headerHeight = header.offsetHeight;
+
+      mobilePreviewStart = previewPanel.offsetTop - headerHeight;
+      mobileFullPreviewHeight = previewPanel.offsetHeight;
+      mobilePreviewFrameHeight = previewFrame.offsetHeight;
+      mobilePreviewPadding = parseFloat(panelStyle.paddingTop) + parseFloat(panelStyle.paddingBottom);
+
+      root.style.setProperty("--mobile-header-height", `${headerHeight}px`);
+    }
+
+    // HOW FAR INTO COLLAPSE ARE WE?
+    const collapseScroll = Math.max(0, window.scrollY - mobilePreviewStart);
+    const consumedScroll = Math.min(collapseScroll, shrinkDistance);
+    const progress = consumedScroll / shrinkDistance;
+
+    // SHRINK PREVIEW
+    const scale = 1 - (1 - minScale) * progress;
+    previewFrame.style.transform = `scale(${scale})`;
+
+    // SHRINK THE SPACE THE PREVIEW OCCUPIES TOO
+    const currentPreviewHeight = mobilePreviewPadding + mobilePreviewFrameHeight * scale;
+    previewPanel.style.height = `${currentPreviewHeight}px`;
+
+    root.style.setProperty("--mobile-preview-height", `${currentPreviewHeight}px`);
+
+    // KEEP CONTROLS FOLLOWING PREVIEW
+    const heightReduction = Math.max(0, mobileFullPreviewHeight - currentPreviewHeight);
+    const controlsDelay = Math.max(0, consumedScroll - heightReduction);
+
+    root.style.setProperty("--mobile-controls-delay", `${controlsDelay}px`);
+  });
 }
+
+function resetMobilePreviewMetrics() {
+  const root = document.documentElement;
+  const previewPanel = document.querySelector(".preview-panel");
+  const previewFrame = document.querySelector(".preview-frame");
+
+  mobilePreviewStart = null;
+  mobileFullPreviewHeight = null;
+  mobilePreviewFrameHeight = null;
+  mobilePreviewPadding = 0;
+
+  previewFrame?.style.removeProperty("transform");
+  previewPanel?.style.removeProperty("height");
+  root.style.removeProperty("--mobile-controls-delay");
+
+  updateMobilePreviewSize();
+}
+
+window.addEventListener("scroll", updateMobilePreviewSize, { passive: true });
+window.addEventListener("resize", resetMobilePreviewMetrics);
+
+function resetMobilePreviewMetrics() {
+  mobilePreviewStart = null;
+  mobileFullPreviewHeight = null;
+
+  updateMobilePreviewSize();
+}
+
+window.addEventListener("scroll",updateMobilePreviewSize,{ passive: true });
+window.addEventListener("resize",resetMobilePreviewMetrics);
+
+  // MEASURE ACTUAL NEW HEIGHT
+  const currentPreviewHeight =
+    previewPanel.getBoundingClientRect().height;
+
+  const heightReduction = Math.max( 0, mobileFullPreviewHeight - currentPreviewHeight);
+  const controlsDelay = Math.max(0,consumedScroll -heightReduction);
+
+  root.style.setProperty( "--mobile-controls-delay", `${controlsDelay}px`);
+
+function resetMobilePreviewMetrics() {
+  mobileFullPreviewHeight = null;
+  updateMobilePreviewSize();
+}
+
+window.addEventListener(
+  "scroll",
+  updateMobilePreviewSize,
+  { passive: true }
+);
+
+window.addEventListener(
+  "resize",
+  resetMobilePreviewMetrics
+);
 
 window.addEventListener("scroll", updateMobilePreviewSize, {
   passive: true
 });
 
 window.addEventListener("resize", updateMobilePreviewSize);
-
-updateMobilePreviewSize();

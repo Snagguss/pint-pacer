@@ -5,22 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pint Pace</title>
   <meta name="description" content="Generate a parody activity graphic.">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?7">
   <script 
     defer 
     src="https://cloud.umami.is/script.js" 
     data-website-id="dd930328-bdfb-4c3d-8eec-d205e6930342">
   </script>
   
-  <script src="script.js" defer></script>
-  <script src="script.js" defer></script>
+  <script src="script.js?v=7" defer></script>
 </head>
 <body>
   <main class="app">
+
+    <div class="mobile-header">
+      <p class="eyebrow">PERFORMATIVE ALCOHOLISM WITH</p>
+      <img
+          class="title-graphic"
+          src="assets/PINT_PACER.png"
+          alt="Pint Pacer"
+        >
+    </div>
+
     <section class="controls">
-      <div>
+      <div class="desktop-header">
         <p class="eyebrow">PERFORMATIVE ALCOHOLISM WITH</p>
-        <h1>Pint Pacer</h1>
+        <img
+          class="title-graphic"
+          src="assets/PINT_PACER.png"
+          alt="Pint Pacer"
+        >
         <!-- <p class="intro">Pick a type, amount and elapsed time, then download the finished PNG.</p> -->
       </div>
 
@@ -84,15 +97,9 @@
     </section>
   </main>
 
-  <footer>Unofficial parody project. Not affiliated with or endorsed by Strava.</footer>
+  <footer>Unofficial parody. Please don't sue me Strava.</footer>
   <script>
-  var d=document,w="https://tally.so/widgets/embed.js",
-  v=function(){
-    if(typeof Tally!=="undefined") Tally.loadEmbeds();
-    else d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach(function(e){
-      e.src=e.dataset.tallySrc;
-    });
-  };
+  var d=document,w="https://tally.so/widgets/embed.js"
 
   if(typeof Tally!=="undefined") v();
   else if(d.querySelector('script[src="'+w+'"]')==null){
