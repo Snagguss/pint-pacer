@@ -250,6 +250,7 @@ const MODES = {
 const ASSET_PATHS = {
   template: "assets/TEMPLATE_S.png",
   amountTemplate: "assets/TEMPLATE_S.png",
+  blankTemplate: "assets/TEMP_BLANK.png",
 
   wineGlass: "assets/WINE_GLASS.png",
   wineLiquid: "assets/WINE_LIQUID.png",
@@ -295,6 +296,7 @@ const moreVolumeButton = document.getElementById("moreVolume");
 const lessTimeButton = document.getElementById("lessTime");
 const moreTimeButton = document.getElementById("moreTime");
 
+const transparentBackground = document.getElementById("transparentBackground");
 const downloadButton = document.getElementById("downloadButton");
 const status = document.getElementById("status");
 
@@ -845,6 +847,11 @@ function renderGraphicRow(value, cfg, back, liquid) {
   });
 }
 
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
 // -----------------------------------------------------------------------------
 // MAIN RENDER
 // -----------------------------------------------------------------------------
@@ -856,7 +863,10 @@ function render() {
   const value = Number(volumeSlider.value);
   const elapsed = Number(timeSlider.value);
 
-  const template = assets[cfg.template];
+  const template = transparentBackground.checked
+    ? assets.blankTemplate
+    : assets[cfg.template];
+
   const back = assets[cfg.back];
   const liquid = assets[cfg.liquid];
 
@@ -911,34 +921,39 @@ async function downloadPng() {
   const safeValue = String(value).replace(".", "-");
   const filename = `pint_pacer_${mode}_${safeValue}.png`;
 
-  const file = canvasToPngFile(canvas, filename);
+  canvas.toBlob(async blob => {
+    if (!blob) return;
 
-  // MOBILE / SUPPORTED BROWSERS — OPEN NATIVE SHARE SHEET
-  if (navigator.share && navigator.canShare?.({ files: [file] })) {
-    try {
-      window.umami?.track("png-download", { type: cfg.displayName });
-      await navigator.share({ files: [file] });
-      return;
-    } catch (error) {
-      if (error.name === "AbortError") return;
-      console.warn("Share failed, falling back to download:", error);
+    const file = new File([blob], filename, { type: "image/png" });
+
+    // iPHONE / iPAD
+    if (isIOS() && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file] });
+        window.umami?.track("png-download", { type: cfg.displayName });
+        return;
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        console.warn("Share failed:", error);
+      }
     }
-  }
 
-  // DESKTOP / UNSUPPORTED BROWSERS — NORMAL DOWNLOAD
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
+    // DESKTOP / FALLBACK — NORMAL DOWNLOAD
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
 
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
+    link.href = url;
+    link.download = filename;
 
-  window.umami?.track("png-download", { type: cfg.displayName });
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
-  link.click();
-  link.remove();
+    window.umami?.track("png-download", { type: cfg.displayName });
 
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  }, "image/png");
 }
 
 // -----------------------------------------------------------------------------
@@ -956,6 +971,7 @@ lessTimeButton.addEventListener("click", () => {stepTimeWhole(-1);});
 moreTimeButton.addEventListener("click", () => {stepTimeWhole(1);});
 
 downloadButton.addEventListener("click", downloadPng);
+transparentBackground.addEventListener("change", render);
 
 // -----------------------------------------------------------------------------
 // START

@@ -236,6 +236,31 @@ input[type="range"] {
   background: rgb(40, 40, 40);
 }
 
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggle-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: #fff;
+}
+
+.save-hint {
+  margin: -14px 0 0;
+  color: #888;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+.save-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 footer {
   width: min(1180px, 100%);
   margin: 20px auto 0;
