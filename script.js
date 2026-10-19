@@ -890,8 +890,17 @@ function render() {
 // -----------------------------------------------------------------------------
 // DOWNLOAD
 // -----------------------------------------------------------------------------
+function canvasToPngFile(canvas, filename) {
+  const data = canvas.toDataURL("image/png");
+  const binary = atob(data.split(",")[1]);
+  const bytes = new Uint8Array(binary.length);
 
-function downloadPng() {
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+  return new File([bytes], filename, { type: "image/png" });
+}
+
+async function downloadPng() {
   if (!assets) return;
 
   render();
@@ -900,31 +909,36 @@ function downloadPng() {
   const value = Number(volumeSlider.value);
   const mode = getMode();
   const safeValue = String(value).replace(".", "-");
-  const filename = `strava_parody_${mode}_${safeValue}.png`;
+  const filename = `pint_pacer_${mode}_${safeValue}.png`;
 
-  canvas.toBlob((blob) => {
-    if (!blob) {
-      status.textContent = "Could not create PNG.";
-      status.classList.add("error");
+  const file = canvasToPngFile(canvas, filename);
+
+  // MOBILE / SUPPORTED BROWSERS — OPEN NATIVE SHARE SHEET
+  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+    try {
+      window.umami?.track("png-download", { type: cfg.displayName });
+      await navigator.share({ files: [file] });
       return;
+    } catch (error) {
+      if (error.name === "AbortError") return;
+      console.warn("Share failed, falling back to download:", error);
     }
+  }
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+  // DESKTOP / UNSUPPORTED BROWSERS — NORMAL DOWNLOAD
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
 
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
 
-    window.umami?.track("png-download", {
-      type: cfg.displayName
-    });
+  window.umami?.track("png-download", { type: cfg.displayName });
 
-    link.click();
-    link.remove();
+  link.click();
+  link.remove();
 
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }, "image/png");
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 // -----------------------------------------------------------------------------
