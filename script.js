@@ -928,7 +928,9 @@ function downloadPng() {
     link.download = filename;
     document.body.appendChild(link);
 
-    window.umami?.track("png-download", {type: mode});
+    window.umami?.track("png-download", {
+      type: cfg.displayName
+    });
 
     link.click();
     link.remove();
