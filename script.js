@@ -984,3 +984,40 @@ loadAssets().catch((error) => {
     "Asset loading failed. Check the filenames in ASSET_PATHS and your assets folder.";
   status.classList.add("error");
 });
+
+function updateMobilePreviewSize() {
+  if (window.innerWidth > 780) {
+    document.documentElement.style.removeProperty("--mobile-preview-width");
+    return;
+  }
+
+  // How far you scroll before image reaches minimum size
+  const shrinkDistance = 260;
+
+  // 0 → 1
+  const progress = Math.min(
+    1,
+    Math.max(0, window.scrollY / shrinkDistance)
+  );
+
+  // Start at 100%, finish at 55%
+  const maxWidth = 100;
+  const minWidth = 55;
+
+  const width =
+    maxWidth -
+    (maxWidth - minWidth) * progress;
+
+  document.documentElement.style.setProperty(
+    "--mobile-preview-width",
+    `${width}%`
+  );
+}
+
+window.addEventListener("scroll", updateMobilePreviewSize, {
+  passive: true
+});
+
+window.addEventListener("resize", updateMobilePreviewSize);
+
+updateMobilePreviewSize();
